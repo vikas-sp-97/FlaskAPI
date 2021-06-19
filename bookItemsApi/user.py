@@ -1,4 +1,3 @@
-import sqlite3
 from FlaskAPI.bookItemsApi.config.UserDB import UserDBSqlLiteTable
 
 class User:

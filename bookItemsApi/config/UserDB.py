@@ -44,12 +44,3 @@ class UserDBSqlLiteTable:
 
 
 
-# obj = UserDBSqlLiteTable()
-# obj.close_connection()
-
-# # obj.create_user_table()
-# # user = (1, 'vikas', 'test')
-# user = (2, 'admin', 'admintest')
-# obj.insert_value_to_user(user)
-#
-# obj.get_users()
