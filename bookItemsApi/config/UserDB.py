@@ -1,5 +1,6 @@
 import sqlite3
 
+
 class UserDBSqlLiteTable:
 
     def __init__(self):
@@ -8,14 +9,15 @@ class UserDBSqlLiteTable:
 
     def create_user_table(self):
         """function to create user table."""
-        create_table = "CREATE TABLE user (id int, username text, password text)"
+        create_table = "CREATE TABLE user (id INTEGER PRIMARY KEY, username text, password text)"
         self.cursor.execute(create_table)
 
     def insert_value_to_user(self, user):
         """user is a tuple, (id, username, password)"""
-        query = "INSERT INTO user VALUES (?,?,?)"
+        query = "INSERT INTO user VALUES (NULL,?,?)"
         self.cursor.execute(query, user)
         self.connection.commit()
+        return {"message": "Inserted entry in user table"}
 
     def close_connection(self):
         self.connection.close()
@@ -41,6 +43,3 @@ class UserDBSqlLiteTable:
             return result.fetchone()
         else:
             return None
-
-
-
