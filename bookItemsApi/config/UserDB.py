@@ -15,9 +15,13 @@ class UserDBSqlLiteTable:
     def insert_value_to_user(self, user):
         """user is a tuple, (id, username, password)"""
         query = "INSERT INTO user VALUES (NULL,?,?)"
-        self.cursor.execute(query, user)
-        self.connection.commit()
-        return {"message": "Inserted entry in user table"}
+        try:
+            self.cursor.execute(query, user)
+            self.connection.commit()
+            return {"message": "Inserted entry in user table"}
+
+        except Exception as e:
+            return {"message": f"Error inserting user! {user[0]} - {e}"}
 
     def close_connection(self):
         self.connection.close()

@@ -44,8 +44,13 @@ class userRegistration(Resource):
 
     def post(self):
         data = userRegistration.parser.parse_args()
+
+        if User.find_by_username(data['username']):
+            return {"message": "User already exists in Database!"}, 400
+
         connection = UserDBSqlLiteTable()
         result = connection.insert_value_to_user((data['username'], data['password']))
-        print(result)
+        if result:
+            return {"message": "user inserted"}, 201
         connection.close_connection()
 
