@@ -16,4 +16,5 @@ api.add_resource(Book, '/book/<string:name>')
 api.add_resource(GetAllBooks, '/get-all-books-details')
 api.add_resource(userRegistration, '/register_user')
 
-app.run(debug=True)
+if __name__ == "__main__":
+    app.run(debug=True)
