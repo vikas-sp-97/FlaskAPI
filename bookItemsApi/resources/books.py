@@ -1,15 +1,33 @@
 from flask_jwt import jwt_required
 from flask_restful import Resource, reqparse
 from bookItemsApi.models.booksModel import BookItemModel
+from flask_apispec import marshal_with, use_kwargs
+from flask_apispec.views import MethodResource
+from marshmallow import Schema, fields
 
 
-class Book(Resource):
+class BooksRequestSchema(Schema):
+    name = fields.Str(required=True, description="name of book")
+    Author = fields.Str(required=True, description="Author's name")
+    Pages = fields.Int(description="No.of pages in the book")
+
+
+class BooksGetResponseSchema(Schema):
+    item = fields.Dict()
+
+
+class BooksResponseSchema(Schema):
+    message = fields.Dict()
+
+
+class Book(MethodResource, Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('name', type=str, required=True, help='This field is mandatory!')
     parser.add_argument('Author', type=str, required=True, help='This field is mandatory!')
     parser.add_argument('Pages', type=int, required=False)
 
     @jwt_required()
+    @marshal_with(BooksGetResponseSchema)
     def get(self, name):
         item = BookItemModel.find_by_name(name)
         if item:
@@ -17,6 +35,8 @@ class Book(Resource):
         else:
             return {"item": None}, 404
 
+    @use_kwargs(BooksRequestSchema, location=('json'))
+    @marshal_with(BooksResponseSchema)
     def post(self, name):
         if BookItemModel.find_by_name(name):
             return {"message": f"Book with name {name} already present"}, 400
@@ -32,12 +52,15 @@ class Book(Resource):
 
         return item.json(), 201
 
+    @marshal_with(BooksResponseSchema)
     def delete(self, name):
         item = BookItemModel.find_by_name(name)
         if item:
             item.delete_from_db()
         return {"message": "Deleted book!"}
 
+    @use_kwargs(BooksRequestSchema, location=('json'))
+    @marshal_with(BooksResponseSchema)
     def put(self, name):
         data = Book.parser.parse_args()
         item = BookItemModel.find_by_name(name)
@@ -51,8 +74,12 @@ class Book(Resource):
         return {"message": f"Updated items {item}"}
 
 
-class GetAllBooks(Resource):
+class GetAllBooksResponseSchema(Schema):
+    item = fields.List(fields.Dict)
 
+
+class GetAllBooks(MethodResource, Resource):
+    @marshal_with(GetAllBooksResponseSchema)
     def get(self):
         return {"item": list(map(lambda x: x.json(), BookItemModel.query.all()))}
         # return {"item": [item.json() for item in BookItemModel.query.all()]}

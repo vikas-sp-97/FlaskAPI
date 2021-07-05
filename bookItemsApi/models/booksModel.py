@@ -1,6 +1,5 @@
 from bookItemsApi.db import db
 
-
 class BookItemModel(db.Model):
     __tablename__ = 'books'
 
