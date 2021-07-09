@@ -21,10 +21,6 @@ class BooksResponseSchema(Schema):
 
 
 class Book(MethodResource, Resource):
-    parser = reqparse.RequestParser()
-    parser.add_argument('name', type=str, required=True, help='This field is mandatory!')
-    parser.add_argument('Author', type=str, required=True, help='This field is mandatory!')
-    parser.add_argument('Pages', type=int, required=False)
 
     @jwt_required()
     @marshal_with(BooksGetResponseSchema)
@@ -37,13 +33,12 @@ class Book(MethodResource, Resource):
 
     @use_kwargs(BooksRequestSchema, location=('json'))
     @marshal_with(BooksResponseSchema)
-    def post(self, name):
+    def post(self, name, **kwargs):
         if BookItemModel.find_by_name(name):
             return {"message": f"Book with name {name} already present"}, 400
 
-        data = Book.parser.parse_args()
-        if data['name'] != name:
-            return {"message": f"Miss-match in data submitted {data['name']} and req-params {name}"}, 400
+        # data = Book.parser.parse_args()
+        data = kwargs
         item = BookItemModel(name, data['Author'], data['Pages'])
         try:
             item.save_to_db()
@@ -61,10 +56,10 @@ class Book(MethodResource, Resource):
 
     @use_kwargs(BooksRequestSchema, location=('json'))
     @marshal_with(BooksResponseSchema)
-    def put(self, name):
-        data = Book.parser.parse_args()
-        item = BookItemModel.find_by_name(name)
-
+    def put(self, name, **kwargs):
+        data = kwargs
+        item = BookItemModel.find_by_name(data['name'])
+    #
         if item is None:
             item = BookItemModel(**data)
         else:
