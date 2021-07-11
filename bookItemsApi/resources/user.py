@@ -17,3 +17,11 @@ class userRegistration(Resource):
         user.save_to_db()
         return {"message": "user inserted"}, 201
 
+
+class DeleteUser(Resource):
+
+    def delete(self, username):
+        user = UserModel.find_by_username(username)
+        if user:
+            user.delete_from_db()
+        return {"message": f"deleted user: {username}"}, 200

@@ -1,5 +1,5 @@
 from flask_jwt import jwt_required
-from flask_restful import Resource, reqparse
+from flask_restful import Resource
 from bookItemsApi.models.booksModel import BookItemModel
 from flask_apispec import marshal_with, use_kwargs
 from flask_apispec.views import MethodResource
@@ -13,11 +13,12 @@ class BooksRequestSchema(Schema):
 
 
 class BooksGetResponseSchema(Schema):
-    item = fields.Dict()
-
+    name = fields.Str()
+    author = fields.Str()
+    pages = fields.Int()
 
 class BooksResponseSchema(Schema):
-    message = fields.Dict()
+    message = fields.Str()
 
 
 class Book(MethodResource, Resource):

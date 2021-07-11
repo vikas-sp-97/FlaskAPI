@@ -1,4 +1,5 @@
 from bookItemsApi.db import db
+from flask_bcrypt import generate_password_hash
 
 
 class UserModel(db.Model):
@@ -10,7 +11,7 @@ class UserModel(db.Model):
 
     def __init__(self, username, password):
         self.username = username
-        self.password = password
+        self.password = generate_password_hash(password)
 
     @classmethod
     def find_by_username(cls, username):
@@ -22,4 +23,8 @@ class UserModel(db.Model):
 
     def save_to_db(self):
         db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self):
+        db.session.delete(self)
         db.session.commit()
