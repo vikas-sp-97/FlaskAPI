@@ -1,7 +1,7 @@
 from flask_jwt import jwt_required
 from flask_restful import Resource
 from bookItemsApi.models.booksModel import BookItemModel
-from flask_apispec import marshal_with, use_kwargs
+from flask_apispec import marshal_with, use_kwargs, doc
 from flask_apispec.views import MethodResource
 from marshmallow import Schema, fields
 
@@ -21,8 +21,14 @@ class BooksResponseSchema(Schema):
     message = fields.Str()
 
 
+@doc(description='access token', params={
+            'Authorization': {
+                'description': 'Authorization HTTP header with JWT access token',
+                'in': 'header',
+                'type': 'string',
+                'required': True
+            }})
 class Book(MethodResource, Resource):
-
     @jwt_required()
     @marshal_with(BooksGetResponseSchema)
     def get(self, name):
@@ -32,6 +38,7 @@ class Book(MethodResource, Resource):
         else:
             return {"item": None}, 404
 
+    @jwt_required()
     @use_kwargs(BooksRequestSchema, location=('json'))
     @marshal_with(BooksResponseSchema)
     def post(self, name, **kwargs):
@@ -48,6 +55,7 @@ class Book(MethodResource, Resource):
 
         return item.json(), 201
 
+    @jwt_required()
     @marshal_with(BooksResponseSchema)
     def delete(self, name):
         item = BookItemModel.find_by_name(name)
@@ -55,6 +63,7 @@ class Book(MethodResource, Resource):
             item.delete_from_db()
         return {"message": "Deleted book!"}
 
+    @jwt_required()
     @use_kwargs(BooksRequestSchema, location=('json'))
     @marshal_with(BooksResponseSchema)
     def put(self, name, **kwargs):
